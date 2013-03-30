@@ -23,10 +23,8 @@ class testAccount(unittest.TestCase):
         price = 9.1
         account = Account(1000, 1)
         account._Account__holdings = {'stock1': (share, price)}
-        print(account.holdings)
 
         holdingCost = account.getHoldingCost()
-        print(holdingCost)
 
         self.assertAlmostEquals(share * price, holdingCost)
 
@@ -39,7 +37,6 @@ class testAccount(unittest.TestCase):
         account.setLastTickDict({'stock1': Quote(0, 0, 0, 0, curPrice, 0, 0)})
 
         holdingValue = account.getHoldingValue()
-        print(holdingValue)
         self.assertAlmostEqual(share * curPrice, holdingValue)
 
     def testTotalValue(self):
@@ -51,7 +48,6 @@ class testAccount(unittest.TestCase):
         account.setLastTickDict({'stock1': Quote(0, 0, 0, 0, curPrice, 0, 0)})
 
         totalValue = account.getTotalValue()
-        print(totalValue)
         self.assertAlmostEquals(1000 + share * curPrice, totalValue)
 
     def testValidate(self):

@@ -20,15 +20,11 @@ class testExcelLib(unittest.TestCase):
         dataSourcePath = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'dataSource')
         with ExcelLib( fileName = os.path.join(dataSourcePath, 'hoursing_interestRate.xls'),
                        mode = ExcelLib.READ_MODE ) as excel:
-            print("sheet numbers: %s" % excel.getOperation().getTotalSheetNumber())
-            print("sheetNames %s" % excel.getOperation().getSheetNames())
             excel.openSheet('Data')
             data = excel.readRow(0)
-            print(data)
             self.assertNotEqual(0, len(data))
 
             data = excel.readCol(0, 7)
-            print(data)
             self.assertNotEqual(0, len(data))
 
     def testWriteExcel(self):

@@ -18,19 +18,16 @@ class testGoogleDam(unittest.TestCase):
         dam = GoogleDAM()
         dam.setSymbol('NASDAQ:EBAY')
         data = dam.readQuotes('20110101', '20110110')
-        print(data)
         self.assertNotEqual(0, len(data))
 
     def testReadTicks(self):
         dam = GoogleDAM()
         dam.setSymbol('EBAY')
         data = dam.readTicks('20111120', '20111201')
-        print(data)
         self.assertNotEqual(0, len(data))
 
     def testReadFundamental(self):
         dam = GoogleDAM()
         dam.setSymbol('EBAY')
         keyTimeValueDict = dam.readFundamental()
-        print(keyTimeValueDict)
         self.assertNotEqual(0, len(keyTimeValueDict))

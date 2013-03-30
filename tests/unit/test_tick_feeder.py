@@ -26,7 +26,6 @@ class testTickFeeder(unittest.TestCase):
         tf = TickFeeder()
         tf.addSource(dam)
 
-        print(tf._TickFeeder__source)
         self.assertEquals({'s1': dam}, tf._TickFeeder__source)
 
     def testGetSymbolsByRe(self):
@@ -34,15 +33,12 @@ class testTickFeeder(unittest.TestCase):
         tf._TickFeeder__source = {'s1': 'dam1', 's11': 'dam2', 's2': 'dam3'}
 
         symbols = tf.getSymbolsByRe('s3')
-        print(symbols)
         self.assertEquals([], symbols)
 
         symbols = tf.getSymbolsByRe('s1')
-        print(symbols)
         self.assertEquals(['s1'], symbols)
 
         symbols = tf.getSymbolsByRe('.*')
-        print(symbols)
         self.assertEquals(set(symbols), set(['s1', 's11', 's2']))
 
     def testValidate_Normal(self):
@@ -56,7 +52,6 @@ class testTickFeeder(unittest.TestCase):
         symbols, sub = tf.validate(sub)
         self.mock.VerifyAll()
 
-        print(symbols)
 
 
     def testValidate_Exception(self):
@@ -82,7 +77,6 @@ class testTickFeeder(unittest.TestCase):
         self.mock.VerifyAll()
 
         subs = tf.getSubs()
-        print(subs)
         self.assertEquals({sub: {'symbols': ['s1'], 'fail': 0} },
                           subs)
 
@@ -128,7 +122,6 @@ class testTickFeeder(unittest.TestCase):
         timeTicks = tf.indexTicks()
         self.mock.VerifyAll()
 
-        print(timeTicks)
         self.assertEquals({'time1': {'s1': tickTime1Dam1, 's2': tickTime1Dam2},
                            'time2': {'s1': tickTime2Dam1, 's2': tickTime2Dam2}},
                            timeTicks)
@@ -154,7 +147,6 @@ class testTickFeeder(unittest.TestCase):
         timeTicks = tf.indexTicks()
         self.mock.VerifyAll()
 
-        print(timeTicks)
         self.assertEquals({'time1': {'s1': tickTime1Dam1, 's2': tickTime1Dam2},
                            'time2': {'s1': tickTime2Dam1, 's2': tickTime2Dam2}},
                            timeTicks)
@@ -167,8 +159,6 @@ class testTickFeeder(unittest.TestCase):
         self.mock.ReplayAll()
         thread = tf.pubTicks(['ticks'], sub)
         self.mock.VerifyAll()
-
-        print (thread)
 
     #TODO, too lazy to write this one........
     def testExecute(self):

@@ -18,5 +18,4 @@ class testYahooDAM(unittest.TestCase):
         dam = YahooDAM()
         dam.setSymbol('^STI')
         data = dam.readQuotes('20110101', '20110110')
-        print(data)
         self.assertNotEquals(len(data), 0)

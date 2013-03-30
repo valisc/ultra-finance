@@ -40,5 +40,3 @@ class testExcelDAM(unittest.TestCase):
         readDam.setDir(self.targetPath)
         readDam.setSymbol(self.symbol)
 
-        print(readDam.readQuotes(0, 10000000000))
-        print(readDam.readTicks(1320676201, 1320676201))

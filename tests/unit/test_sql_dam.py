@@ -31,9 +31,6 @@ class testSqlDAM(unittest.TestCase):
         dam.writeQuotes(quotes)
         dam.writeTicks(ticks)
         dam.commit()
-        print([str(quote) for quote in dam.readQuotes(0, None) ])
-        print([str(tick) for tick in dam.readTicks(0, "1320676201")])
-        print([str(tick) for tick in dam.readTicks(0, "1320676202")])
 
 
     def testFundamental(self):
@@ -46,5 +43,4 @@ class testSqlDAM(unittest.TestCase):
         dam.commit()
 
         ret = dam.readFundamental()
-        print(ret)
         self.assertEqual(keyTimeValueDict, ret)
