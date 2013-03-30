@@ -78,7 +78,8 @@ class GoogleFinance(object):
             # sample values:[['Date', 'Open', 'High', 'Low', 'Close', 'Volume'], \
             #              ['2009-12-31', '112.77', '112.80', '111.39', '111.44', '90637900']...]
             data = []
-            for value in values[1:]:
+            bad_data_filter = lambda valSet: all(map(lambda val: val.strip() != "-", valSet))
+            for value in filter(bad_data_filter, values[1:]):
                 date = convertGoogCSVDate(value[0])
                 data.append(Quote(date,
                                   value[1].strip(),
