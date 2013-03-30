@@ -6,6 +6,7 @@ Created on Dec 4, 2011
 from ultrafinance.dam.DAMFactory import DAMFactory
 
 from os import path
+import re
 import datetime
 from dateutil.relativedelta import relativedelta
 import optparse
@@ -16,6 +17,7 @@ from threading import Lock
 BATCH_SIZE = 30
 THREAD_TIMEOUT = 5
 MAX_TRY = 3
+DATE_FORMAT = re.compile(r"\d{8}")
 
 class SymbolCrawler(object):
     ''' collect quotes/ticks for a list of symbol '''
@@ -79,7 +81,7 @@ class SymbolCrawler(object):
             print("Please provide valid outputDAM %s" % options.outputDAM)
             exit(4)
 
-        if options.start not in ['all', 'month']:
+        if not (options.start in ['all', 'month'] or DATE_FORMAT.match(options.start)):
             print("Please provide valid start option(all|month): %s" % options.outputDAM)
             exit(4)
 
@@ -104,8 +106,11 @@ class SymbolCrawler(object):
         # set start date and end date
         if 'all' == options.start:
             self.start = '19800101'
-        else:
+        elif 'month' == options.start:
             self.start = (datetime.datetime.now() + relativedelta(months = -1)).strftime("%Y%m%d")
+        else:
+            self.start = options.start
+
         self.end = datetime.datetime.now().strftime("%Y%m%d")
         if options.dataType in ["quote", "all"]:
             print("Retrieving quotes start from %s" % self.start)
