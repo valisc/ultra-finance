@@ -135,7 +135,7 @@ class GoogleFinance(object):
 
             return keyTimeValue
 
-        except BaseException:
+        except StandardError:
             raise UfException(Errors.UNKNOWN_ERROR, "Unknown Error in GoogleFinance.getHistoricalPrices %s" % traceback.format_exc())
 
     def _parseTarget(self, target, keyTimeValue):
