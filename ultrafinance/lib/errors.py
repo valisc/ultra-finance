@@ -66,7 +66,7 @@ class Errors(object):
     TABLENAME_ALREADY_SET = 1301
     INVALID_SAVER_NAME = 1302
 
-class UfException(Exception):
+class UfException(StandardError):
     """ Ultra-Finance exception """
     def __init__(self, error, errorMsg):
         """ constructor  """
