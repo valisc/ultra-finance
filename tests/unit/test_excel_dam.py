@@ -6,17 +6,19 @@ Created on Nov 27, 2011
 import unittest
 
 import os
+import tempfile
+from shutil import rmtree
 from ultrafinance.model import Tick, Quote
 from ultrafinance.dam.excelDAM import ExcelDAM
 
 class testExcelDAM(unittest.TestCase):
 
     def setUp(self):
-        self.targetPath = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'output')
+        self.targetPath = tempfile.mkdtemp()
         self.symbol = 'ebay'
 
     def tearDown(self):
-        pass
+        rmtree(self.targetPath)
 
     def testWriteExcel(self):
         writeDam = ExcelDAM()

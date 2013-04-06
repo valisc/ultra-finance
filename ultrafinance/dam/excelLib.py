@@ -195,10 +195,10 @@ class ExcelRead(ExcelOpertion):
 
         if abs(col) > self.__sheet.ncols:
             raise UfException(Errors.INDEX_RANGE_ERROR,
-                              "Excellib.readCol: col number too big: col %s, max %s" % (col, self.sheet.ncols) )
+                              "Excellib.readCol: col number too big: col %s, max %s" % (col, self.__sheet.ncols) )
         if max(abs(startRow), abs(endRow)) > self.__sheet.nrows:
             raise UfException(Errors.INDEX_RANGE_ERROR,
-                              "Excellib.readCol: row number too big: row %s, max %s" % (max(abs(startRow), abs(endRow)), self.sheet.nrows) )
+                              "Excellib.readCol: row number too big: row %s, max %s" % (max(abs(startRow), abs(endRow)), self.__sheet.nrows) )
         if -1 == endRow:
             endRow = self.__sheet.nrows
 

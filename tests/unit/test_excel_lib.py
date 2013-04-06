@@ -6,30 +6,21 @@ Created on May 6, 2011
 import unittest
 
 import os
+import tempfile
+from shutil import rmtree
 from ultrafinance.dam.excelLib import ExcelLib
 
 class testExcelLib(unittest.TestCase):
 
     def setUp(self):
-        pass
+        self.targetPath = tempfile.mkdtemp()
+      
 
     def tearDown(self):
-        pass
-
-    def testReadExcel(self):
-        dataSourcePath = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'dataSource')
-        with ExcelLib( fileName = os.path.join(dataSourcePath, 'hoursing_interestRate.xls'),
-                       mode = ExcelLib.READ_MODE ) as excel:
-            excel.openSheet('Data')
-            data = excel.readRow(0)
-            self.assertNotEqual(0, len(data))
-
-            data = excel.readCol(0, 7)
-            self.assertNotEqual(0, len(data))
+        rmtree(self.targetPath)
 
     def testWriteExcel(self):
-        targetPath = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'output')
-        targetFile = os.path.join(targetPath, "writeTest.xls")
+        targetFile = os.path.join(self.targetPath, "excel_lib_test.xls")
         sheetName = "testSheet"
 
         if os.path.exists(targetFile):
@@ -41,3 +32,16 @@ class testExcelLib(unittest.TestCase):
             excel.writeRow(0, [1, 2, 3, "4", "5"])
 
         self.assertTrue(os.path.exists(targetFile))
+
+    def testReadExcel(self):
+        self.testWriteExcel()
+        targetFile = os.path.join(self.targetPath, "excel_lib_test.xls")
+        with ExcelLib( fileName = targetFile, mode = ExcelLib.READ_MODE ) as excel:
+            excel.openSheet('testSheet')
+            data = excel.readRow(0)
+            self.assertNotEqual(0, len(data))
+
+            data = excel.readCol(0, 0)
+            self.assertNotEqual(0, len(data))
+
+
