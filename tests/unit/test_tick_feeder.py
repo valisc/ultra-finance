@@ -138,7 +138,7 @@ class testTickFeeder(unittest.TestCase):
 
     def testPubTicks(self):
         sub = self.mock.CreateMock(TickSubsriber)
-        sub.runConsume(['ticks'])
+        sub.tickUpdate(['ticks'])
 
         tf = TickFeeder()
         self.mock.ReplayAll()

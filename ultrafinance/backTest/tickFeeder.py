@@ -136,6 +136,6 @@ class TickFeeder(object):
 
     def pubTicks(self, ticks, sub):
         ''' publish ticks to sub '''
-        thread = Thread(target = sub.doConsume, args = (ticks,))
+        thread = Thread(target = sub.tickUpdate, args = (ticks,))
         thread.start()
         return thread
