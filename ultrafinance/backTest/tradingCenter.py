@@ -4,6 +4,7 @@ Created on Dec 18, 2011
 @author: ppa
 '''
 from ultrafinance.model import Side, Order
+from ultrafinance.backTest.accountManager import AccountManager
 from ultrafinance.lib.errors import Errors, UfException
 import uuid
 import re
@@ -17,9 +18,9 @@ class TradingCenter(object):
     trading center
     Note: set metricNames before adding accounts
     '''
-    def __init__(self):
+    def __init__(self, accountManager = AccountManager()):
         ''' constructor '''
-        self.accountManager = None
+        self.accountManager = accountManager
         self.__openOrders = {}
         self.__closedOrders = {}
         self.__lastSymbolPrice = {}

@@ -20,9 +20,9 @@ class AccountManager(object):
         self.__accountPositions = {}
         self.saver = None
 
-    def createAccount(self, cash, commission = 0):
-        ''' create account '''
-        account = Account(cash, commission)
+    #TODO refactor this as addAccount which accepts an account object
+    def addAccount(self, account):
+        ''' add account '''
         self.__accounts[account.accountId] = account
         self.__accountPositions[account.accountId] = [] # list contains tuple (time, position)
 
