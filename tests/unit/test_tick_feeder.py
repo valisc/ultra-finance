@@ -5,10 +5,12 @@ Created on Jan 18, 2011
 '''
 import mox
 import unittest
+from datetime import datetime
+from ultrafinance.backTest.constant import TRADE_TYPE, TICK, QUOTE
 from ultrafinance.backTest.tickSubscriber import TickSubsriber
 from ultrafinance.dam.baseDAM import BaseDAM
-from ultrafinance.model import Tick
-
+from ultrafinance.model import Tick, Quote
+from ultrafinance.backTest.appGlobal import appGlobal
 from ultrafinance.backTest.tickFeeder import TickFeeder
 from ultrafinance.lib.errors import UfException
 
@@ -76,47 +78,43 @@ class testTickFeeder(unittest.TestCase):
         self.assertRaises(UfException, tf.register, sub)
         self.mock.VerifyAll()
 
-    def testInputType(self):
-        tf = TickFeeder()
 
-        #invalid type - test assignment
-        self.assertRaises(UfException, tf._TickFeeder__setInputType, 'adafsdf')
-
-        #valid type - test assignment
-        tf.inputType = TickFeeder.TICK_TYPE
-
-        self.assertEquals(TickFeeder.TICK_TYPE, tf.inputType)
-
-    def testIndexTicks_quote(self):
-        tickTime1Dam1 = Tick('time1', 'open1', 'high1', 'low1', 'close1', 'volume1')
-        tickTime2Dam1 = Tick('time2', 'open2', 'high2', 'low2', 'close2', 'volume2')
-        tickTime1Dam2 = Tick('time1', 'open11', 'high11', 'low11', 'close11', 'volume11')
-        tickTime2Dam2 = Tick('time2', 'open22', 'high22', 'low22', 'close22', 'volume22')
+    def testLoadTicks_quote(self):
+        time1 = datetime.now()
+        time2 = datetime.now()
+        quoteTime1Dam1 = Quote(time1, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0)
+        quoteTime2Dam1 = Quote(time2, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0)
+        quoteTime1Dam2 = Quote(time1, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0)
+        quoteTime2Dam2 = Quote(time2, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0)
 
         dam1 = self.mock.CreateMock(BaseDAM)
-        dam1.readQuotes(mox.IgnoreArg(), mox.IgnoreArg()).AndReturn([tickTime1Dam1, tickTime2Dam1])
+        dam1.readQuotes(mox.IgnoreArg(), mox.IgnoreArg()).AndReturn([quoteTime1Dam1, quoteTime2Dam1])
 
         dam2 = self.mock.CreateMock(BaseDAM)
-        dam2.readQuotes(mox.IgnoreArg(), mox.IgnoreArg()).AndReturn([tickTime1Dam2, tickTime2Dam2])
+        dam2.readQuotes(mox.IgnoreArg(), mox.IgnoreArg()).AndReturn([quoteTime1Dam2, quoteTime2Dam2])
 
         tf = TickFeeder()
-        tf.inputType = TickFeeder.QUOTE_TYPE
+        tf.inputType = QUOTE
+        appGlobal[TRADE_TYPE] = QUOTE
+
         tf._TickFeeder__source = {'s1': dam1, 's2': dam2}
 
         self.mock.ReplayAll()
-        timeTicks = tf.indexTicks()
+        timeTicks = tf.loadTicks()
         self.mock.VerifyAll()
 
-        self.assertEquals({'time1': {'s1': tickTime1Dam1, 's2': tickTime1Dam2},
-                           'time2': {'s1': tickTime2Dam1, 's2': tickTime2Dam2}},
+        self.assertEquals({time1: {'s1': quoteTime1Dam1, 's2': quoteTime1Dam2},
+                           time2: {'s1': quoteTime2Dam1, 's2': quoteTime2Dam2}},
                            timeTicks)
 
 
-    def testIndexTicks_tick(self):
-        tickTime1Dam1 = Tick('time1', 'open1', 'high1', 'low1', 'close1', 'volume1')
-        tickTime2Dam1 = Tick('time2', 'open2', 'high2', 'low2', 'close2', 'volume2')
-        tickTime1Dam2 = Tick('time1', 'open11', 'high11', 'low11', 'close11', 'volume11')
-        tickTime2Dam2 = Tick('time2', 'open22', 'high22', 'low22', 'close22', 'volume22')
+    def testLoadTicks_tick(self):
+        time1 = datetime.now()
+        time2 = datetime.now()
+        tickTime1Dam1 = Tick(time1, 100.0, 100.0, 100.0, 100.0, 100.0)
+        tickTime2Dam1 = Tick(time2, 100.0, 100.0, 100.0, 100.0, 100.0)
+        tickTime1Dam2 = Tick(time1, 100.0, 100.0, 100.0, 100.0, 100.0)
+        tickTime2Dam2 = Tick(time2, 100.0, 100.0, 100.0, 100.0, 100.0)
 
         dam1 = self.mock.CreateMock(BaseDAM)
         dam1.readTicks(mox.IgnoreArg(), mox.IgnoreArg()).AndReturn([tickTime1Dam1, tickTime2Dam1])
@@ -125,15 +123,16 @@ class testTickFeeder(unittest.TestCase):
         dam2.readTicks(mox.IgnoreArg(), mox.IgnoreArg()).AndReturn([tickTime1Dam2, tickTime2Dam2])
 
         tf = TickFeeder()
-        tf.inputType = TickFeeder.TICK_TYPE
         tf._TickFeeder__source = {'s1': dam1, 's2': dam2}
+        tf.inputType = TICK
+        appGlobal[TRADE_TYPE] = TICK
 
         self.mock.ReplayAll()
-        timeTicks = tf.indexTicks()
+        timeTicks = tf.loadTicks()
         self.mock.VerifyAll()
 
-        self.assertEquals({'time1': {'s1': tickTime1Dam1, 's2': tickTime1Dam2},
-                           'time2': {'s1': tickTime2Dam1, 's2': tickTime2Dam2}},
+        self.assertEquals({time1: {'s1': tickTime1Dam1, 's2': tickTime1Dam2},
+                           time2: {'s1': tickTime2Dam1, 's2': tickTime2Dam2}},
                            timeTicks)
 
     def testPubTicks(self):
