@@ -30,55 +30,6 @@ class testTickFeeder(unittest.TestCase):
 
         self.assertEquals({'s1': dam}, tf._TickFeeder__source)
 
-    def testValidate_Normal(self):
-        sub = self.mock.CreateMock(TickSubsriber)
-        sub.subRules().AndReturn(['s1', 'mockRule'])
-
-        tf = TickFeeder()
-        tf._TickFeeder__source = {'s1': 'dam1', 's11': 'dam2', 's2': 'dam3'}
-
-        self.mock.ReplayAll()
-        symbols, sub = tf.validate(sub)
-        self.mock.VerifyAll()
-
-    def testValidate_Exception(self):
-        sub = self.mock.CreateMock(TickSubsriber)
-        sub.subRules().AndReturn(['s3', 'mockRule'])
-
-        tf = TickFeeder()
-        tf._TickFeeder__source = {'s1': 'dam1', 's11': 'dam2', 's2': 'dam3'}
-
-        self.mock.ReplayAll()
-        self.assertRaises(UfException, tf.validate, sub)
-        self.mock.VerifyAll()
-
-    def testRegister_Normal(self):
-        sub = self.mock.CreateMock(TickSubsriber)
-        sub.subRules().AndReturn(['s1', 'mockRule'])
-
-        tf = TickFeeder()
-        tf._TickFeeder__source = {'s1': 'dam1', 's11': 'dam2', 's2': 'dam3'}
-
-        self.mock.ReplayAll()
-        tf.register(sub)
-        self.mock.VerifyAll()
-
-        subs = tf.getSubs()
-        self.assertEquals({sub: {'symbols': ['s1'], 'fail': 0} },
-                          subs)
-
-    def testRegister_Exception(self):
-        sub = self.mock.CreateMock(TickSubsriber)
-        sub.subRules().AndReturn(['s3', 'mockRule'])
-
-        tf = TickFeeder()
-        tf._TickFeeder__source = {'s1': 'dam1', 's11': 'dam2', 's2': 'dam3'}
-
-        self.mock.ReplayAll()
-        self.assertRaises(UfException, tf.register, sub)
-        self.mock.VerifyAll()
-
-
     def testLoadTicks_quote(self):
         time1 = datetime.now()
         time2 = datetime.now()
