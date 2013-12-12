@@ -9,6 +9,7 @@ from ultrafinance.backTest.tradingCenter import TradingCenter
 from ultrafinance.backTest.tickFeeder import TickFeeder
 from ultrafinance.backTest.tradingEngine import TradingEngine
 from ultrafinance.backTest.accountManager import AccountManager
+from ultrafinance.backTest.account import Account
 from ultrafinance.ufConfig.pyConfig import PyConfig
 from ultrafinance.dam.DAMFactory import DAMFactory
 from ultrafinance.backTest.stateSaver.stateSaverFactory import StateSaverFactory
@@ -155,7 +156,7 @@ class TestRunner(object):
         strategy.history = self.__history
 
         #associate account
-        accountId = self.__accountManager.createAccount(BackTester.CASH)
+        accountId = self.__accountManager.addAccount(Account(BackTester.CASH, 0))
         strategy.accountId = accountId
 
         #register on trading engine

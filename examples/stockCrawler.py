@@ -50,7 +50,7 @@ class SymbolCrawler(object):
                           help = "data type that will be stored, e.g. quote|tick|all")
         parser.add_option("-s", "--start", dest = "start",
                           default = 'month', type = "string",
-                          help = "start date, all|month")
+                          help = "start date, all|month|day")
         parser.add_option("-o", "--outputDAM", dest = "outputDAM",
                           default = 'sql', type = "string",
                           help = "output dam, e.g. sql|hbase")
@@ -81,8 +81,8 @@ class SymbolCrawler(object):
             print("Please provide valid outputDAM %s" % options.outputDAM)
             exit(4)
 
-        if not (options.start in ['all', 'month'] or DATE_FORMAT.match(options.start)):
-            print("Please provide valid start option(all|month): %s" % options.outputDAM)
+        if not (options.start in ['all', 'month', 'day'] or DATE_FORMAT.match(options.start)):
+            print("Please provide valid start option(all|month|day): %s" % options.outputDAM)
             exit(4)
 
         if "quote" == options.dataType:
@@ -108,6 +108,8 @@ class SymbolCrawler(object):
             self.start = '19800101'
         elif 'month' == options.start:
             self.start = (datetime.datetime.now() + relativedelta(months = -1)).strftime("%Y%m%d")
+        elif 'day' == options.start:
+            self.start = (datetime.datetime.now() + relativedelta(days = -1)).strftime("%Y%m%d")
         else:
             self.start = options.start
 

@@ -5,19 +5,25 @@ Created on Aug 11, 2011
 '''
 import os
 import sys
-from ultrafinance.lib.googleFinance import GoogleFinance
+import json
+import signal
+
+from exceptions import KeyboardInterrupt
+from ultrafinance.dam.googleFinance import GoogleFinance
 
 class StockPicker:
     ''' sort stocks '''
-    def __init__(self):
+    def __init__(self, stockList = 'SPY500.list', outputFile = 'SPY500.output'):
         ''' constructor '''
-        self.__workingDir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                             'dataSource',
-                             'SPY')
-        self.__stockList = os.path.join(self.__workingDir, 'SPY500.list')
-        self.__outputFile = os.path.join(self.__workingDir, 'SPY500.output')
+        self.__workingDir = os.getcwd()
+        self.__stockList = readStockSymbols(stockListPath)
+        self.__outputFile = outputFile
 
-    def getStockFinancials(self, fields, writeOutput=False):
+    def readStockSymbols(stockListPath):
+        with open(stockListPath) as stockSymbolFile:
+            return [line.strip() for line in stockSymbolFile.readlines()]
+
+    def getStockFinancials(self, writeOutput=False):
         ''' get stock financials '''
         with open(self.__stockList) as inFile:
             stockFinancials = {}
@@ -26,15 +32,15 @@ class StockPicker:
                 try:
                     stockName = stockName.strip()
                     googleFinance = GoogleFinance()
-                    financials = googleFinance.getFinancials(stockName, fields)
-                    print "%s %s" % (stockName, financials)
+                    financials = googleFinance.getFinancials(stockName)
+                    print "Processed %s" % stockName
                     stockFinancials[stockName] = financials
-                except Exception as excp:
+                except StandardError as excp:
                     print '%s' % excp
 
             if writeOutput:
                 with open(self.__outputFile, 'w') as outFile:
-                    outFile.write(str(stockFinancials))
+                    outFile.write(json.dumps(stockFinancials))
 
             return stockFinancials
 
@@ -43,25 +49,24 @@ class StockPicker:
     def readStockFinancials(self):
         ''' read financials from file '''
         with open(self.__outputFile) as file:
-            # dangerous to use eval
-            return eval(file.read())
+            return json.loads(file.read())
 
     def calDeceasingRate(self, value):
-            try:
-                firstIncRate = (float(value[0]) - float(value[1])) / float(value[1]) if float(value[1]) else 0
-                secondIncRate = (float(value[1]) - float(value[2])) / float(value[2]) if float(value[2]) else 0
-                thirdIncRate = (float(value[2]) - float(value[3])) / float(value[3]) if float(value[3]) else 0
-                incRate = (firstIncRate + secondIncRate + thirdIncRate) / 3
+        try:
+            firstIncRate = (float(value[0]) - float(value[1])) / float(value[1]) if float(value[1]) else 0
+            secondIncRate = (float(value[1]) - float(value[2])) / float(value[2]) if float(value[2]) else 0
+            thirdIncRate = (float(value[2]) - float(value[3])) / float(value[3]) if float(value[3]) else 0
+            incRate = (firstIncRate + secondIncRate + thirdIncRate) / 3
 
-                return incRate
-            except:
-                return 0 - sys.maxint
+            return incRate
+        except:
+            return 0 - sys.maxint
 
     def calAverage(self, value):
-            try:
-                return (float(value[0]) + float(value[1]) + float(value[2]) + float(value[3])) / 4
-            except:
-                return 0 - sys.maxint
+          try:
+              return (float(value[0]) + float(value[1]) + float(value[2]) + float(value[3])) / 4
+          except:
+              return 0 - sys.maxint
 
     def sortStocks(self, stockFinancials, field, topNum=20):
         def sortByFieldDecreasing(stockFinancials):
@@ -70,22 +75,23 @@ class StockPicker:
             if not value:
                 return 0 - sys.maxint
 
-#            return self.calDeceasingRate(value)
             return self.calAverage(value)
 
         ret = {}
         for name, values in sorted(stockFinancials.iteritems(), key=sortByFieldDecreasing, reverse=True)[0:topNum]:
-            #ret[name] = (self.calDeceasingRate(values[field]), values[field])
             ret[name] = ('%.2f' % self.calAverage(values[field]), values[field])
-            #ret[name] = '%.2f' % self.calAverage(values[field])
 
         return ret
 
 if __name__ == '__main__':
-    app = StockPicker()
-    #app.getStockFinancials(['Total Revenue',
-    #                        'Diluted Normalized EPS', 'Net Income', 'Gross Profit', 'Total Operating Expense', 'Income After Tax'],
-    #                       True)
+    def signal_handler(signal, frame):
+        print 'You pressed Ctrl+C! Exiting'
+        sys.exit(0)
+    
+    signal.signal(signal.SIGINT, signal_handler)
+
+    app = StockPicker(stockList = sys.argv[1], outputFile = sys.argv[2])
+    app.getStockFinancials(writeOutput = True)
     stockFinancials = app.readStockFinancials()
     topNum = 20
     field1 = 'Total Revenue'
